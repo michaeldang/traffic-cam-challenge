@@ -18,6 +18,17 @@ $(document).ready(function(){
     var cameras;
     var markers = [];
 
+    $("#search").bind("search keyup", function() {
+        var searchQuery = $('#search').val().toLowerCase();
+        for (var index = 0; index < cameras.length; index++) {
+            if (cameras[index].cameralabel.toLowerCase().indexOf(searchQuery) >= 0) {
+                markers[index].setMap(map);
+            } else {
+                markers[index].setMap(null);
+            }
+        }
+    });
+
     $.getJSON('http://data.seattle.gov/resource/65fc-btcc.json')
         .done(function(data, itemIndex) {
             cameras = data;
@@ -32,6 +43,7 @@ $(document).ready(function(){
                 markers.push(marker);
 
                 google.maps.event.addListener(marker, 'click', function() {
+                    map.panTo(marker.getPosition());
                     var html = '<h2>' + camera.cameralabel + '</h2>'
                                 + '<p>' + '<img src=' + camera.imageurl.url + ' alt="Camera Image Feed">' + '</p>';
                     infoWindow.setContent(html);
